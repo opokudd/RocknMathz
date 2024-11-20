@@ -9,8 +9,14 @@ public enum GameState
     Paused,
     GameOver
 }
+
+
+
 public class GameManager : MonoBehaviour
 {
+    //Declare currentState inside the class
+    private GameState currentState;
+
     // Start is called before the first frame update
     void Start()
     {

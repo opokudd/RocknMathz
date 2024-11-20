@@ -4,15 +4,23 @@ using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public int score = 0;
+    public int combo = 0;
+    public int maxCombo = 0;
+
+    public void AddScore(int points)
     {
-        
+        score += points;
+        combo++;
+        if (combo > maxCombo)
+        {
+            maxCombo = combo;
+        }
+        Debug.Log("Score: " + score + " Combo: " + combo);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ResetCombo()
     {
-        
+        combo = 0;
     }
 }
