@@ -1,7 +1,9 @@
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GamePlayManager : MonoBehaviour
 {
@@ -10,10 +12,19 @@ public class GamePlayManager : MonoBehaviour
     public Text questionText; // The UI Text for displaying questions
     public InputField answerInputField; // The input field where the player types their answer
     public Button submitButton; // Button to submit the answer
+    public Button exitButton; // Button to go to scoreshop
     public Text scoreText; // The UI Text for the score
     public Text timerText; // The UI Text for the timer
     public Text feedbackText; // The UI Text for feedback (correct or incorrect)
     public Text levelText; //The UI Text for displaying the player's level
+    public AudioClip[] musicTracks; // Array to hold music tracks
+    
+
+   
+    public AudioSource musicSource; // The AudioSource for background music
+    private SaveLoadManager saveLoadManager;
+    private PlayerData currentPlayerData;
+    
     
     private int score = 0; // Player's score
     private int timeRemaining = 60; // Timer set to 60 seconds
@@ -25,6 +36,21 @@ public class GamePlayManager : MonoBehaviour
 
     void Start()
     {
+       saveLoadManager = FindObjectOfType<SaveLoadManager>(); // Finds SaveLoadManager in the scene
+    if (saveLoadManager == null)
+    {
+        Debug.LogError("SaveLoadManager is not found in the scene.");
+        return; // Don't proceed if saveLoadManager is not assigned
+    }
+
+    currentPlayerData = saveLoadManager.LoadPlayerData("playerUsername");
+        // Check if the player owns the first music track and play it if so
+        if (currentPlayerData != null && currentPlayerData.musicOwned[0]) 
+        {
+            musicSource.clip = musicTracks[0]; // Set the first music track
+            musicSource.Play(); // Play it
+        }
+
         feedbackText.text = "";
         score = 0;
         currentLevel = 1; // Start from level 1
@@ -34,20 +60,27 @@ public class GamePlayManager : MonoBehaviour
 
         // Add listener for submit button
         submitButton.onClick.AddListener(OnSubmitAnswer);
-        
+
+        exitButton.onClick.AddListener(OnExitClick);
+
         // Generate the first question
         GenerateQuestion();
+
+        // Set up the music purchase buttons if available
+        
     }
 
     // Update is called once per frame
     void Update()
-    {
-        if (isGameOver)
-            return;
+        {
+            if (isGameOver)
+                return;
 
-        // Update the timer display every frame
-        timerText.text = "Time: " + timeRemaining.ToString();
-    }
+            // Update the timer display every frame
+            timerText.text = "Time: " + timeRemaining.ToString();
+
+            
+        }
 
     // Countdown timer that runs in the background
     IEnumerator CountdownTimer()
@@ -117,6 +150,11 @@ public class GamePlayManager : MonoBehaviour
         answerInputField.text = "";
     }
 
+    void OnExitClick()
+    {
+        SceneManager.LoadScene("ScoreShop");
+    }
+
         void CheckLevelUp()
     {
         for (int i = 0; i < levelThresholds.Length; i++)
@@ -142,3 +180,4 @@ public class GamePlayManager : MonoBehaviour
         scoreText.text = "Score: " + score.ToString();
     }
 }
+
