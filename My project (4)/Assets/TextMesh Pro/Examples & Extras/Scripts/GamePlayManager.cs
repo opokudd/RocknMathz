@@ -23,6 +23,7 @@ public class GamePlayManager : MonoBehaviour
    
     public AudioSource musicSource; // The AudioSource for background music
     private SaveLoadManager saveLoadManager;
+    private MenuManager MenuManager;
     private PlayerData currentPlayerData;
     
     
@@ -32,7 +33,7 @@ public class GamePlayManager : MonoBehaviour
     private int correctAnswer; // Correct answer for the current question
     private bool isGameOver = false; // Flag to check if the game is over
     private int currentLevel = 1; // Player's current level (starts at 1)
-    private int[] levelThresholds = {100, 500, 500, 700, 1000 }; //Score thresholds to unlock new levels
+    private int[] levelThresholds = {1000, 2000, 3000, 4000, 5000 }; //Score thresholds to unlock new levels
 
     void Start()
     {
@@ -43,7 +44,7 @@ public class GamePlayManager : MonoBehaviour
         return; // Don't proceed if saveLoadManager is not assigned
     }
 
-    currentPlayerData = saveLoadManager.LoadPlayerData("playerUsername");
+    currentPlayerData = saveLoadManager.LoadPlayerData(MenuManager.currentUsername);
         // Check if the player owns the first music track and play it if so
         if (currentPlayerData != null && currentPlayerData.musicOwned[0]) 
         {
@@ -118,41 +119,50 @@ public class GamePlayManager : MonoBehaviour
     }
 
     void OnSubmitAnswer()
+{
+    if (isGameOver)
+        return;
+
+    int playerAnswer;
+    bool isValid = int.TryParse(answerInputField.text, out playerAnswer); // Parse the input
+
+    if (isValid && playerAnswer == correctAnswer)
     {
-        if (isGameOver)
-            return;
+        // Calculate coins based on the level
+        int coinsEarned = 0;
+        if (currentLevel == 1) coinsEarned = 5;
+        else if (currentLevel == 2) coinsEarned = 10;
+        else if (currentLevel == 3) coinsEarned = 15;
+        else coinsEarned = 20; // Level 4 and above
 
-        int playerAnswer;
-        bool isValid = int.TryParse(answerInputField.text, out playerAnswer); // Parse the input
-
-        if (isValid && playerAnswer == correctAnswer)
-        {
-            // Correct answer
-            score += (int)(timeRemaining * 1.5f);
-            feedbackText.text = "Correct!"; // Show feedback
-        }
-        else
-        {
-            // Incorrect answer
-            feedbackText.text = "Incorrect!"; // Show feedback
-        }
-
-        // Check if the player has reached the next level
-        CheckLevelUp();
-
-        // Update the score UI
-        UpdateScore();
-
-        // Generate a new question
-        GenerateQuestion();
-
-        // Clear the input field for the next answer
-        answerInputField.text = "";
+        score += coinsEarned; // Add coins to the score
+        feedbackText.text = $"Correct! You earned {coinsEarned} coins."; // Show feedback
     }
+    else
+    {
+        // Incorrect answer
+        feedbackText.text = "Incorrect!"; // Show feedback
+    }
+
+    // Check if the player has reached the next level
+    CheckLevelUp();
+
+    // Update the score UI
+    UpdateScore();
+
+    // Generate a new question
+    GenerateQuestion();
+
+    // Clear the input field for the next answer
+    answerInputField.text = "";
+}
+
 
     void OnExitClick()
     {
-        SceneManager.LoadScene("ScoreShop");
+        UpdateLevel();
+        UpdateScore();
+        SceneManager.LoadScene("MainMenuManager");
     }
 
         void CheckLevelUp()

@@ -22,6 +22,7 @@ public class PlayerData
         this.level = 1;
         this.currency = 0;
         this.musicOwned = new bool[5]; // Assuming 5 music tracks
+        this.musicOwned[0] = true; 
     }
 }
 
@@ -41,77 +42,94 @@ public class SaveLoadManager : MonoBehaviour
 
     // Load player data from file by username
 
-    // Assuming PlayerData is a class representing the player's information
+    
 public PlayerData LoadPlayerData(string username)
 {
-    if (File.Exists(saveFilePath))
-    {
-        try
-        {
-            string json = File.ReadAllText(saveFilePath);
-            PlayerDatabase database = JsonUtility.FromJson<PlayerDatabase>(json);
-
-            // Debug: Check the contents of the player database
-            Debug.Log("Database loaded, players count: " + database.players.Count);
-
-            foreach (PlayerData data in database.players)
-            {
-                if (data.username == username)
-                {
-                    return data;  // Player found
-                }
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError("Error loading player data: " + ex.Message);
-        }
-    }
-    else
+    if (!File.Exists(Application.persistentDataPath + "/playerData.json"))
     {
         Debug.LogError("Save file not found at: " + saveFilePath);
+        Debug.LogError("Save file  at: " + Application.persistentDataPath);
+
+        // Optional: Create a default file to prevent errors
+        CreateDefaultSaveFile();
+        return null;
+    }
+
+    try
+    {
+        string json = File.ReadAllText(Application.persistentDataPath + "/playerData.json");
+        PlayerDatabase database = JsonUtility.FromJson<PlayerDatabase>(json);
+
+        foreach (PlayerData data in database.players)
+        {
+            if (data.username == username)
+            {
+                return data;  // Player found
+            }
+        }
+    }
+    catch (System.Exception ex)
+    {
+        Debug.LogError("Error loading player data: " + ex.Message);
     }
 
     return null;  // Return null if player data not found
 }
 
+private void CreateDefaultSaveFile()
+{
+    PlayerDatabase defaultDatabase = new PlayerDatabase
+    {
+        players = new List<PlayerData>
+        {
+            new PlayerData("TestUser", "password123")
+        }
+    };
 
+    string defaultJson = JsonUtility.ToJson(defaultDatabase, true);
+    File.WriteAllText(Application.persistentDataPath + "/playerData.json", defaultJson);
+    Debug.Log("Default save file created at: " + Application.persistentDataPath + "/playerData.json");
+}
 
 
 
     // Save player data to file
     public void SavePlayerData(PlayerData playerData)
 {
-    PlayerDatabase database = new PlayerDatabase();
+    PlayerDatabase database;
 
-    // Load existing data from the save file (if any)
+    // Load existing data or initialize a new database
     if (File.Exists(saveFilePath))
     {
-        string json = File.ReadAllText(saveFilePath);
+        string json = File.ReadAllText(Application.persistentDataPath + "/playerData.json");
         database = JsonUtility.FromJson<PlayerDatabase>(json);
     }
+    else
+    {
+        database = new PlayerDatabase();
+        database.players = new List<PlayerData>();
+    }
 
-    // Check if the player already exists in the database
+    // Update or add player data
     bool playerExists = false;
     for (int i = 0; i < database.players.Count; i++)
     {
         if (database.players[i].username == playerData.username)
         {
-            database.players[i] = playerData; // Update existing player data
+            database.players[i] = playerData;
             playerExists = true;
             break;
         }
     }
-
-    // If player doesn't exist, add new player
     if (!playerExists)
     {
         database.players.Add(playerData);
     }
 
-    // Save the updated player database back to the file
+    // Save the updated database
     string jsonToSave = JsonUtility.ToJson(database, true);
-    File.WriteAllText(saveFilePath, jsonToSave);
+    File.WriteAllText(Application.persistentDataPath + "/playerData.json", jsonToSave);
+    Debug.Log("Player data saved successfully.");
 }
 
 
@@ -119,9 +137,9 @@ public PlayerData LoadPlayerData(string username)
     // Load all player data from the file
     private void LoadAllPlayerData()
     {
-        if (File.Exists(saveFilePath))
+        if (File.Exists(Application.persistentDataPath + "/playerData.json"))
         {
-            string json = File.ReadAllText(saveFilePath);
+            string json = File.ReadAllText(Application.persistentDataPath + "/playerData.json");
             PlayerDatabase database = JsonUtility.FromJson<PlayerDatabase>(json);
             playerDatabase = new Dictionary<string, PlayerData>();
 
@@ -144,7 +162,7 @@ public PlayerData LoadPlayerData(string username)
         database.players = new List<PlayerData>(playerDatabase.Values);
 
         string json = JsonUtility.ToJson(database, true);
-        File.WriteAllText(saveFilePath, json);
+        File.WriteAllText(Application.persistentDataPath + "/playerData.json", json);
     }
 }
 

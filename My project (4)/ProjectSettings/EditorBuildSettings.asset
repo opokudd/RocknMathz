@@ -9,13 +9,25 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/GameplayScene.unity
-    guid: b73e3f2d7839059458c3dadf415d5ee6
-  - enabled: 1
     path: Assets/Scenes/Main Menu.unity
     guid: f8a5dede93bb6c64f8ae30389d80e4fd
   - enabled: 1
-    path: Assets/Scenes/ScoreShop.unity
+    path: Assets/Scenes/MainMenuManager.unity
     guid: 3d62bf857d828424bbce9b8029dcd21f
+  - enabled: 1
+    path: Assets/Scenes/GameplayScene.unity
+    guid: b73e3f2d7839059458c3dadf415d5ee6
+  - enabled: 1
+    path: Assets/Scenes/InstructionsPage.unity
+    guid: 03484f59d10777241881adfa343b2741
+  - enabled: 1
+    path: Assets/Scenes/Progress.unity
+    guid: b5f5c5e1faf227f4ebc03b0b0c36e224
+  - enabled: 1
+    path: Assets/Scenes/Store.unity
+    guid: 8541e58e2b9ecff45a2c4c79a70da4a1
+  - enabled: 1
+    path: Assets/Scenes/Settings.unity
+    guid: 530cdcb1dc6edea4296357de3e734b7d
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

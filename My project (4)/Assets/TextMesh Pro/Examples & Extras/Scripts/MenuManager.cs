@@ -71,6 +71,6 @@ public class MenuManager : MonoBehaviour
     // Method to load the mainMenu scene
     private void LoadGameplayScene()
     {
-        SceneManager.LoadScene("ScoreShop"); 
+        SceneManager.LoadScene("MainMenuManager"); 
     }
 }

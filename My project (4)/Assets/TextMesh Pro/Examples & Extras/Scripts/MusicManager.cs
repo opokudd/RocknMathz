@@ -6,50 +6,41 @@ using UnityEngine.UI;
 
 
 
-    // Ensure everything is inside the class
     public class MusicManager : MonoBehaviour
+{
+    public static MusicManager Instance; // Singleton instance
+    public AudioSource musicSource; // AudioSource component to play music
+    public AudioClip menuMusic; // Assign the menu music clip in the Inspector
+
+    private void Awake()
     {
-        // Declare variables and fields inside the class
-        public int[] musicPrices = new int[5] { 100, 150, 200, 250, 300 }; // Prices for 5 tracks
-        private PlayerData currentPlayer;
-        private SaveLoadManager saveLoadManager;
-
-        // Start method for initialization
-        private void Start()
+        // Singleton pattern to persist music across scenes
+        if (Instance == null)
         {
-            // Initialize saveLoadManager and player data
-            saveLoadManager = FindObjectOfType<SaveLoadManager>();
-            currentPlayer = saveLoadManager.LoadPlayerData("PlayerUsername"); // Replace with actual username
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Persist this GameObject
         }
-
-        // Method to handle music purchase
-        public void OnPurchaseMusic(int trackIndex)
+        else
         {
-            // Check if the track index is valid
-            if (trackIndex >= 0 && trackIndex < musicPrices.Length)
-            {
-                int trackPrice = musicPrices[trackIndex]; // Get the price for the selected track
-
-                // Check if the player has enough currency
-                if (currentPlayer.currency >= trackPrice)
-                {
-                    // Player has enough currency, proceed with purchase
-                    currentPlayer.currency -= trackPrice;
-                    currentPlayer.musicOwned[trackIndex] = true; // Mark the music as owned
-                    saveLoadManager.SavePlayerData(currentPlayer); // Save the updated player data
-                    Debug.Log("Music purchased successfully!");
-                }
-                else
-                {
-                    // Not enough currency
-                    Debug.Log("Not enough currency to purchase this track.");
-                }
-            }
-            else
-            {
-                // Invalid track index
-                Debug.Log("Invalid track index.");
-            }
+            Destroy(gameObject); // Prevent duplicate instances
         }
     }
 
+    private void Start()
+    {
+        if (musicSource != null && menuMusic != null && !musicSource.isPlaying)
+        {
+            musicSource.clip = menuMusic; // Assign the music
+            musicSource.loop = true; // Loop the music
+            musicSource.Play(); // Start playing
+        }
+    }
+
+    public void StopMusic()
+    {
+        if (musicSource.isPlaying)
+        {
+            musicSource.Stop();
+        }
+    }
+}
