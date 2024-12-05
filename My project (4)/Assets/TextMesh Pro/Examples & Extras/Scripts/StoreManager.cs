@@ -77,24 +77,34 @@ public class StoreManager : MonoBehaviour
     }
 
     private void UpdateTrackButtons()
+{
+    for (int i = 0; i < trackButtons.Length; i++)
     {
-        for (int i = 0; i < trackButtons.Length; i++)
+        Text buttonText = trackButtons[i].GetComponentInChildren<Text>();
+        if (buttonText == null)
         {
-            if (currentPlayerData.musicOwned[i])
-            {
-                trackButtons[i].GetComponentInChildren<Text>().text = "Play";
-                trackButtons[i].interactable = true;
-            }
-            else
-            {
-                trackButtons[i].GetComponentInChildren<Text>().text = "Buy - " + trackCosts[i] + " Coins";
-                trackButtons[i].interactable = currentPlayerData.currency >= trackCosts[i];
-            }
+            Debug.LogError("No Text component found for button " + i);
+            continue;
         }
+
+        if (currentPlayerData.musicOwned[i])
+        {
+            buttonText.text = "Play";
+            trackButtons[i].interactable = true;
+        }
+        else
+        {
+            buttonText.text = "Buy - " + trackCosts[i] + " Coins";
+            trackButtons[i].interactable = currentPlayerData.currency >= trackCosts[i];
+        }
+
+        Debug.Log("Button " + i + " updated with text: " + buttonText.text);
     }
+}
+
 
     public void ReturnToMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenuManager");
     }
 }

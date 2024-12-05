@@ -27,14 +27,29 @@ using UnityEngine.UI;
     }
 
     private void Start()
+{
+    if (menuMusic != null)
     {
-        if (musicSource != null && menuMusic != null && !musicSource.isPlaying)
-        {
-            musicSource.clip = menuMusic; // Assign the music
-            musicSource.loop = true; // Loop the music
-            musicSource.Play(); // Start playing
-        }
+        Debug.Log("Menu music clip assigned: " + menuMusic.name);
     }
+    else
+    {
+        Debug.LogError("Menu music clip not assigned!");
+    }
+
+    if (musicSource != null)
+    {
+        musicSource.clip = menuMusic;
+        musicSource.loop = true;
+        musicSource.Play();
+        Debug.Log("Music started playing.");
+    }
+    else
+    {
+        Debug.LogError("AudioSource not assigned!");
+    }
+}
+
 
     public void StopMusic()
     {
