@@ -533,8 +533,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 7532a6c8774072041a084ae4d62ee93a, type: 3}
-  m_Resource: {fileID: 8300000, guid: 7532a6c8774072041a084ae4d62ee93a, type: 3}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -633,7 +633,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicSource: {fileID: 284271718}
-  menuMusic: {fileID: 8300000, guid: 7532a6c8774072041a084ae4d62ee93a, type: 3}
+  musicTracks:
+  - {fileID: 8300000, guid: 2a0d2689f72e5c946926b0fbb84d4996, type: 3}
+  - {fileID: 8300000, guid: e033d21dd05214144a9c5d12e1f6ca57, type: 3}
+  - {fileID: 8300000, guid: 8a6843d85e73b284e9f8ac7d4f01e221, type: 3}
+  - {fileID: 8300000, guid: e195a4d26ca4d4647995b85868a00eb6, type: 3}
+  - {fileID: 8300000, guid: 7b650f8f67bbcdc4ab1d3eb6309e2cd5, type: 3}
+  currentTrackIndex: 0
 --- !u!4 &284271720
 Transform:
   m_ObjectHideFlags: 0

@@ -2,15 +2,14 @@ using UnityEngine;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
+using UnityEngine;
 
-
-
-    public class MusicManager : MonoBehaviour
+public class MusicManager : MonoBehaviour
 {
     public static MusicManager Instance; // Singleton instance
     public AudioSource musicSource; // AudioSource component to play music
-    public AudioClip menuMusic; // Assign the menu music clip in the Inspector
+    public AudioClip[] musicTracks; // Array of music tracks
+    public int currentTrackIndex = 0; // Currently selected track index
 
     private void Awake()
     {
@@ -19,6 +18,7 @@ using UnityEngine.UI;
         {
             Instance = this;
             DontDestroyOnLoad(gameObject); // Persist this GameObject
+            Instance = this;
         }
         else
         {
@@ -27,35 +27,31 @@ using UnityEngine.UI;
     }
 
     private void Start()
-{
-    if (menuMusic != null)
     {
-        Debug.Log("Menu music clip assigned: " + menuMusic.name);
-    }
-    else
-    {
-        Debug.LogError("Menu music clip not assigned!");
+        PlayCurrentTrack();
     }
 
-    if (musicSource != null)
+    public void PlayCurrentTrack()
     {
-        musicSource.clip = menuMusic;
-        musicSource.loop = true;
-        musicSource.Play();
-        Debug.Log("Music started playing.");
-    }
-    else
-    {
-        Debug.LogError("AudioSource not assigned!");
-    }
-}
-
-
-    public void StopMusic()
-    {
-        if (musicSource.isPlaying)
+        if (musicTracks != null && currentTrackIndex >= 0 && currentTrackIndex < musicTracks.Length)
         {
-            musicSource.Stop();
+            musicSource.clip = musicTracks[currentTrackIndex];
+            musicSource.loop = true;
+            musicSource.Play();
+            Debug.Log("Playing track: " + musicTracks[currentTrackIndex].name);
+        }
+        else
+        {
+            Debug.LogError("Invalid track index or tracks not assigned.");
+        }
+    }
+
+    public void SetTrack(int trackIndex)
+    {
+        if (trackIndex >= 0 && trackIndex < musicTracks.Length)
+        {
+            currentTrackIndex = trackIndex;
+            PlayCurrentTrack();
         }
     }
 }

@@ -7,23 +7,22 @@ using UnityEngine.SceneManagement;
 public class StoreManager : MonoBehaviour
 {
     public Button[] trackButtons; // Assign 5 buttons in the Inspector
-    public Button back;
-    public Text[] trackPrices; // Text showing track prices
+    public Button backButton; // Button to return to the menu
     public Text currencyText; // Display user's current currency
     public AudioClip[] musicTracks; // Assign your music tracks here
-    public AudioSource musicSource; // To play the selected track
-    private int[] trackCosts = { 0, 50, 100, 150, 200 }; // Costs of the tracks
+    private int[] trackCosts = { 0, 200, 400, 600, 1000 }; // Costs of the tracks
 
     private SaveLoadManager saveLoadManager;
     private PlayerData currentPlayerData;
 
     private void Start()
     {
-        back.onClick.AddListener(ReturnToMenu);
+        backButton.onClick.AddListener(ReturnToMenu);
+
         saveLoadManager = FindObjectOfType<SaveLoadManager>();
         if (saveLoadManager == null)
         {
-            Debug.LogError("SaveLoadManager not found in the scene!");
+            Debug.LogError("SaveLoadManager not found!");
             return;
         }
 
@@ -34,43 +33,37 @@ public class StoreManager : MonoBehaviour
             return;
         }
 
-        // Update UI
         UpdateCurrencyDisplay();
         UpdateTrackButtons();
     }
 
     public void BuyOrSelectTrack(int trackIndex)
+{
+    if (trackIndex < 0 || trackIndex >= currentPlayerData.musicOwned.Length)
     {
-        if (currentPlayerData.musicOwned[trackIndex])
-        {
-            // Already owned, select the track
-            PlayTrack(trackIndex);
-        }
-        else if (currentPlayerData.currency >= trackCosts[trackIndex])
-        {
-            // Buy the track
-            currentPlayerData.currency -= trackCosts[trackIndex];
-            currentPlayerData.musicOwned[trackIndex] = true;
-            saveLoadManager.SavePlayerData(currentPlayerData);
-
-            // Update UI and play the purchased track
-            UpdateCurrencyDisplay();
-            UpdateTrackButtons();
-            PlayTrack(trackIndex);
-        }
-        else
-        {
-            Debug.Log("Not enough currency to buy this track!");
-        }
+        Debug.LogError($"Invalid trackIndex: {trackIndex}. Valid range: 0 to {currentPlayerData.musicOwned.Length - 1}");
+        return;
     }
 
-    private void PlayTrack(int trackIndex)
-{
-    MusicManager.Instance.musicSource.clip = musicTracks[trackIndex];
-    MusicManager.Instance.musicSource.Play();
+    if (currentPlayerData.musicOwned[trackIndex])
+    {
+        // If already owned, play the track
+        MusicManager.Instance.musicSource.clip = musicTracks[trackIndex];
+        MusicManager.Instance.musicSource.Play();
+    }
+    else if (currentPlayerData.currency >= trackCosts[trackIndex])
+    {
+        // Buy the track
+        currentPlayerData.currency -= trackCosts[trackIndex];
+        currentPlayerData.musicOwned[trackIndex] = true;
+        saveLoadManager.SavePlayerData(currentPlayerData);
+
+        // Update UI and play the purchased track
+        UpdateCurrencyDisplay();
+        UpdateTrackButtons();
+        MusicManager.Instance.musicSource.clip = musicTracks[trackIndex];
+  }
 }
-
-
     private void UpdateCurrencyDisplay()
     {
         currencyText.text = "Currency: " + currentPlayerData.currency.ToString();
@@ -80,6 +73,7 @@ public class StoreManager : MonoBehaviour
 {
     for (int i = 0; i < trackButtons.Length; i++)
     {
+        int index = i; // Local copy for the lambda
         Text buttonText = trackButtons[i].GetComponentInChildren<Text>();
         if (buttonText == null)
         {
@@ -98,13 +92,16 @@ public class StoreManager : MonoBehaviour
             trackButtons[i].interactable = currentPlayerData.currency >= trackCosts[i];
         }
 
-        Debug.Log("Button " + i + " updated with text: " + buttonText.text);
+        // Remove any previous listeners to avoid stacking
+        trackButtons[i].onClick.RemoveAllListeners();
+        trackButtons[i].onClick.AddListener(() => BuyOrSelectTrack(index));
     }
 }
 
 
-    public void ReturnToMenu()
+    private void ReturnToMenu()
     {
         SceneManager.LoadScene("MainMenuManager");
     }
 }
+

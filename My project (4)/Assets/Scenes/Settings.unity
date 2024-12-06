@@ -844,7 +844,7 @@ MonoBehaviour:
   muteButton: {fileID: 1549001972}
   contactButton: {fileID: 231291095}
   contactInfoText: {fileID: 1612674554}
-  musicSource: {fileID: 0}
+  musicSource: {fileID: 1210697404}
   goBack: {fileID: 1868697347}
 --- !u!1 &1170635462
 GameObject:
@@ -956,7 +956,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicSource: {fileID: 1210697404}
-  menuMusic: {fileID: 0}
+  musicTracks:
+  - {fileID: 8300000, guid: 2a0d2689f72e5c946926b0fbb84d4996, type: 3}
+  - {fileID: 8300000, guid: e033d21dd05214144a9c5d12e1f6ca57, type: 3}
+  - {fileID: 8300000, guid: 8a6843d85e73b284e9f8ac7d4f01e221, type: 3}
+  - {fileID: 8300000, guid: e195a4d26ca4d4647995b85868a00eb6, type: 3}
+  - {fileID: 8300000, guid: 7b650f8f67bbcdc4ab1d3eb6309e2cd5, type: 3}
+  currentTrackIndex: 0
 --- !u!4 &1210697403
 Transform:
   m_ObjectHideFlags: 0
@@ -987,7 +993,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0

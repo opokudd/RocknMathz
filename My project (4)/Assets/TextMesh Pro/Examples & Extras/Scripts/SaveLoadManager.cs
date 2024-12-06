@@ -12,6 +12,7 @@ public class PlayerData
     public int level;
     public int currency;
     public bool[] musicOwned; // Tracks music ownership
+    public int selectedTrackIndex; // Currently selected track
 
     // Constructor for PlayerData
     public PlayerData(string username, string password)
@@ -22,9 +23,11 @@ public class PlayerData
         this.level = 1;
         this.currency = 0;
         this.musicOwned = new bool[5]; // Assuming 5 music tracks
-        this.musicOwned[0] = true; 
+        this.musicOwned[0] = true; // The first track is free
+        this.selectedTrackIndex = 0; // Default to track 0
     }
 }
+
 
 
 public class SaveLoadManager : MonoBehaviour
@@ -94,23 +97,20 @@ private void CreateDefaultSaveFile()
 
 
     // Save player data to file
-    public void SavePlayerData(PlayerData playerData)
+   public void SavePlayerData(PlayerData playerData)
 {
     PlayerDatabase database;
 
-    // Load existing data or initialize a new database
     if (File.Exists(saveFilePath))
     {
-        string json = File.ReadAllText(Application.persistentDataPath + "/playerData.json");
+        string json = File.ReadAllText(saveFilePath);
         database = JsonUtility.FromJson<PlayerDatabase>(json);
     }
     else
     {
-        database = new PlayerDatabase();
-        database.players = new List<PlayerData>();
+        database = new PlayerDatabase { players = new List<PlayerData>() };
     }
 
-    // Update or add player data
     bool playerExists = false;
     for (int i = 0; i < database.players.Count; i++)
     {
@@ -121,15 +121,16 @@ private void CreateDefaultSaveFile()
             break;
         }
     }
+
     if (!playerExists)
     {
         database.players.Add(playerData);
     }
 
-    // Save the updated database
     string jsonToSave = JsonUtility.ToJson(database, true);
-    File.WriteAllText(Application.persistentDataPath + "/playerData.json", jsonToSave);
-    Debug.Log("Player data saved successfully.");
+    File.WriteAllText(saveFilePath, jsonToSave);
+
+    Debug.Log($"Player data for {playerData.username} saved successfully.");
 }
 
 
